@@ -26,7 +26,7 @@ const app = new import_koa.default();
 const router = new import_koa_router.default();
 const welcomeAPI = async (ctx, next) => {
   ctx.body = { message: "Welcome to blog API" };
-  await next;
+  await next();
 };
 router.get("/api/v1", welcomeAPI);
 app.use((0, import_koa_logger.default)());

@@ -27,22 +27,36 @@ __export(articles_exports, {
   router: () => router
 });
 module.exports = __toCommonJS(articles_exports);
-var import_Koa_router = __toESM(require("Koa-router"));
+var import_koa_router = __toESM(require("koa-router"));
+var import_koa_bodyparser = __toESM(require("koa-bodyparser"));
 const articles = [
   { title: "Hello article", fullText: "some text to fill the body" },
   { title: "another article", fullText: "another text to fill the body" },
   { title: "dllm article", fullText: "dllm" },
   { title: "smart campus", fullText: "smart campus" }
 ];
-const router = new import_Koa_router.default({ prefix: "/api/v1/articles" });
+const router = new import_koa_router.default({ prefix: "/api/v1/articles" });
 const getAll = async (ctx, next) => {
   ctx.body = articles;
   await next();
 };
 const createArticle = async (ctx, next) => {
+  let c = ctx.request.body;
+  let title = c.title;
+  let fullText = c.fullText;
+  let newArticle = { title, fullText };
+  articles.push(newArticle);
+  ctx.status = 201;
+  ctx.body = newArticle;
   await next();
 };
 const getById = async (ctx, next) => {
+  let id = ctx.params.id;
+  if (id < articles.length + 1 && id > 0) {
+    ctx.body = articles[id - 1];
+  } else {
+    ctx.status = 404;
+  }
   await next();
 };
 const updateArticle = async (ctx, next) => {
@@ -52,10 +66,10 @@ const deleteArticle = async (ctx, next) => {
   await next();
 };
 router.get("/", getAll);
-router.post("/", createArticle);
-router.get("/:id", getById);
-router.put("/:id", updateArticle);
-router.delete("/:id", deleteArticle);
+router.post("/", (0, import_koa_bodyparser.default)(), createArticle);
+router.get("/:id([0-9]{1,})", getById);
+router.put("/:id([0-9]{1,})", updateArticle);
+router.delete("/:id([0-9]{1,})", deleteArticle);
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   router
