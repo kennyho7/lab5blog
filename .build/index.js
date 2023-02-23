@@ -33,5 +33,15 @@ app.use((0, import_koa_logger.default)());
 app.use((0, import_koa_json.default)());
 app.use(router.routes());
 app.use(import_articles.router.routes());
+app.use(async (ctx, next) => {
+  try {
+    await next();
+    if (ctx.status === 404) {
+      ctx.body = { err: "Resource not found" };
+    }
+  } catch (err) {
+    ctx.body = { err };
+  }
+});
 app.listen(10888);
 //# sourceMappingURL=index.js.map
