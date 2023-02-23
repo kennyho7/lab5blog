@@ -36,6 +36,7 @@ const getById = async (ctx: RouterContext, next:any) => {
 }
 
 const updateArticle = async (ctx: RouterContext, next:any) => {
+  
   await next();
 }
 
@@ -46,7 +47,7 @@ const deleteArticle = async (ctx: RouterContext, next:any) => {
 router.get('/', getAll);
 router.post('/', bodyparser(), createArticle);
 router.get('/:id([0-9]{1,})', getById);
-router.put('/:id([0-9]{1,})', updateArticle);
+router.put('/:id([0-9]{1,})', bodyparser(), updateArticle);
 router.delete('/:id([0-9]{1,})', deleteArticle);
 
 export { router }; //point to index
