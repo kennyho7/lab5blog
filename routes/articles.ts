@@ -36,11 +36,29 @@ const getById = async (ctx: RouterContext, next:any) => {
 }
 
 const updateArticle = async (ctx: RouterContext, next:any) => {
-  
+  let id = +ctx.params.id;
+  let {title, fullText} = ctx.request.body;
+  if((id < articles.length +1) && (id>0)) {
+    ctx.body = articles[id-1];
+    articles[id-1].title = title;
+    articles[id-1].fullText = fullText;
+    ctx.status = 200;
+    ctx.body = articles;
+  }else{
+    ctx.status = 404;
+  }
   await next();
 }
 
 const deleteArticle = async (ctx: RouterContext, next:any) => {
+  let id = +ctx.params.id;
+  if((id < articles.length +1) && (id>0)) {
+    articles.splice(id-1, 1);
+    ctx.status = 200;
+    ctx.body = articles;
+  }else{
+    ctx.status = 404;
+  }
   await next();
 }
 
@@ -51,3 +69,8 @@ router.put('/:id([0-9]{1,})', bodyparser(), updateArticle);
 router.delete('/:id([0-9]{1,})', deleteArticle);
 
 export { router }; //point to index
+
+
+//let c: any = ctx.request.body;
+//let tille =c.tilte;
+//let fullText = c.fullText;

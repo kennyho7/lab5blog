@@ -60,16 +60,28 @@ const getById = async (ctx, next) => {
   await next();
 };
 const updateArticle = async (ctx, next) => {
-  let c = ctx.request.body;
-  let title = c.title;
-  let fullText = c.fullText;
-  let updateArticle2 = { title, fullText };
-  articles.put(updateArticle2);
-  ctx.status = 201;
-  ctx.body = updateArticle2;
+  let id = +ctx.params.id;
+  let { title, fullText } = ctx.request.body;
+  if (id < articles.length + 1 && id > 0) {
+    ctx.body = articles[id - 1];
+    articles[id - 1].title = title;
+    articles[id - 1].fullText = fullText;
+    ctx.status = 200;
+    ctx.body = articles;
+  } else {
+    ctx.status = 404;
+  }
   await next();
 };
 const deleteArticle = async (ctx, next) => {
+  let id = +ctx.params.id;
+  if (id < articles.length + 1 && id > 0) {
+    articles.splice(id - 1, 1);
+    ctx.status = 200;
+    ctx.body = articles;
+  } else {
+    ctx.status = 404;
+  }
   await next();
 };
 router.get("/", getAll);
