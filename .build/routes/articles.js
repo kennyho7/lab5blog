@@ -29,6 +29,7 @@ __export(articles_exports, {
 module.exports = __toCommonJS(articles_exports);
 var import_koa_router = __toESM(require("koa-router"));
 var import_koa_bodyparser = __toESM(require("koa-bodyparser"));
+var model = __toESM(require("../models/articles"));
 const articles = [
   { title: "Hello article", fullText: "some text to fill the body" },
   { title: "another article", fullText: "another text to fill the body" },
@@ -37,23 +38,31 @@ const articles = [
 ];
 const router = new import_koa_router.default({ prefix: "/api/v1/articles" });
 const getAll = async (ctx, next) => {
-  ctx.body = articles;
+  let articles2 = await model.getALL();
+  if (articles2.length) {
+    ctx.body = articles2;
+  } else {
+    ctx.body = {};
+  }
   await next();
 };
 const createArticle = async (ctx, next) => {
-  let c = ctx.request.body;
-  let title = c.title;
-  let fullText = c.fullText;
-  let newArticle = { title, fullText };
-  articles.push(newArticle);
-  ctx.status = 201;
-  ctx.body = newArticle;
+  const body = ctx.request.body;
+  let result = await model.add(body);
+  if (result.status == 201) {
+    ctx.status = 201;
+    ctx.body = body;
+  } else {
+    ctx.status = 500;
+    ctx.body = { err: "insert data failed" };
+  }
   await next();
 };
 const getById = async (ctx, next) => {
   let id = +ctx.params.id;
-  if (id < articles.length + 1 && id > 0) {
-    ctx.body = articles[id - 1];
+  let article = await model.getById(id);
+  if (article.length) {
+    ctx.body = articles[0];
   } else {
     ctx.status = 404;
   }
